@@ -1,0 +1,936 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ManifestOS Web Demo</title>
+<meta name="description" content="Try the ManifestOS desktop in your browser: pick your bias, open Manifest Hub, play with the terminal and the birthday surprise.">
+<meta property="og:title" content="ManifestOS Web Demo">
+<meta property="og:description" content="Try the ManifestOS desktop in your browser.">
+<meta property="og:image" content="https://manifest-linux.github.io/manifestos/brand/social-preview.png">
+<link rel="icon" href="../brand/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #E0479E;
+  --accent-ink: #FFFFFF;
+  --plum: #2B1438;
+  --panel: rgba(255, 247, 251, 0.86);
+  --panel-solid: #FFF7FB;
+  --text: #2B1438;
+  --muted: #6F5A78;
+  --line: rgba(43, 20, 56, 0.12);
+  --shadow: 0 24px 60px rgba(43, 20, 56, 0.28);
+}
+body.night {
+  --panel: rgba(30, 14, 40, 0.86);
+  --panel-solid: #24102F;
+  --text: #FBEEF6;
+  --muted: #C9B2D3;
+  --line: rgba(255, 255, 255, 0.12);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body {
+  background: var(--plum);
+  color: var(--text);
+  font: 15px/1.45 Nunito, system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+button { font: inherit; color: inherit; }
+#desktop { position: fixed; inset: 0; height: 100dvh; overflow: hidden; }
+.wall {
+  position: absolute; inset: 0; background-size: cover; background-position: 68% center;
+  transition: opacity 0.7s ease;
+}
+.wall.hidden { opacity: 0; }
+.desk-icon {
+  position: absolute; top: 16px; left: 14px; width: 92px; padding: 8px 4px;
+  display: grid; justify-items: center; gap: 6px; background: none; border: 0; border-radius: 12px;
+  color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); font-size: 13px; cursor: pointer;
+}
+.desk-icon:hover { background: rgba(255, 255, 255, 0.18); }
+.desk-icon img { width: 52px; height: 52px; }
+.widget {
+  position: absolute; top: 16px; right: 16px; width: 300px; padding: 14px 16px;
+  background: var(--panel); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow);
+}
+.widget h4 { margin: 0; font-size: 12px; letter-spacing: 0.04em; color: var(--muted); font-weight: 600; }
+.widget .next { font-family: Comfortaa, sans-serif; font-weight: 700; margin-top: 4px; }
+.widget .count { font-family: Comfortaa, sans-serif; font-weight: 700; font-size: 26px; margin: 2px 0 8px; font-variant-numeric: tabular-nums; }
+.widget ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; font-size: 13px; }
+.widget li { display: flex; align-items: center; gap: 8px; }
+.widget li span.t { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.widget li span.d { color: var(--muted); font-variant-numeric: tabular-nums; }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+#taskbar {
+  position: absolute; left: 10px; right: 10px; bottom: 10px; height: 58px; padding: 0 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--panel); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); z-index: 5000;
+}
+.tb-apps { display: flex; gap: 6px; }
+.tb-btn {
+  width: 46px; height: 46px; display: grid; place-items: center; border: 0; border-radius: 12px;
+  background: transparent; cursor: pointer; position: relative;
+}
+.tb-btn:hover { background: rgba(127, 127, 127, 0.16); }
+.tb-btn.open::after {
+  content: ""; position: absolute; bottom: 3px; width: 16px; height: 3px; border-radius: 3px; background: var(--accent);
+}
+.tb-btn img, .tb-btn svg { width: 30px; height: 30px; }
+.tray { position: absolute; right: 14px; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.tray .clock { text-align: right; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.pill {
+  border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 4px 10px;
+  cursor: pointer; font-weight: 800; font-size: 12px;
+}
+.start {
+  position: absolute; bottom: 78px; left: 50%; transform: translateX(-50%); width: min(560px, calc(100vw - 20px));
+  max-height: calc(100dvh - 100px); overflow: auto; padding: 18px;
+  background: var(--panel); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); z-index: 5001;
+}
+.start[hidden] { display: none; }
+.start input {
+  width: 100%; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line);
+  background: rgba(127, 127, 127, 0.08); color: var(--text); font: inherit; outline-color: var(--accent);
+}
+.start .apps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 14px 0; }
+.start .app {
+  display: grid; justify-items: center; gap: 6px; padding: 10px 4px; border: 0; border-radius: 12px;
+  background: transparent; cursor: pointer; font-size: 12.5px; text-align: center;
+}
+.start .app:hover { background: rgba(127, 127, 127, 0.14); }
+.start .app .ic { width: 40px; height: 40px; display: grid; place-items: center; font-size: 26px; }
+.start .app .ic img, .start .app .ic svg { width: 36px; height: 36px; }
+.start .foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; border-top: 1px solid var(--line); padding-top: 12px; font-size: 13px; color: var(--muted); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 0 16px;
+  border: 0; border-radius: 12px; background: var(--accent); color: var(--accent-ink); font-weight: 800;
+  cursor: pointer; text-decoration: none;
+}
+.btn.ghost { background: rgba(127, 127, 127, 0.14); color: var(--text); }
+.win {
+  position: absolute; display: flex; flex-direction: column; min-width: 300px;
+  background: var(--panel-solid); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow);
+  overflow: hidden; animation: pop 0.18s ease-out;
+}
+@keyframes pop { from { transform: scale(0.96); opacity: 0; } to { transform: none; opacity: 1; } }
+.win header {
+  height: 42px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0 8px 0 14px;
+  border-bottom: 1px solid var(--line); cursor: grab; user-select: none; touch-action: none;
+}
+.win header img { width: 18px; height: 18px; }
+.win header b { flex: 1; font-weight: 700; font-size: 14px; }
+.win header button { width: 30px; height: 30px; border: 0; border-radius: 8px; background: transparent; cursor: pointer; font-size: 18px; line-height: 1; }
+.win header button:hover { background: #FF5C5C; color: #fff; }
+.win .body { flex: 1; overflow: auto; padding: 18px; }
+.bias h2, .hub h2 { font-family: Comfortaa, sans-serif; margin: 0 0 6px; }
+.bias p { margin: 0 0 14px; color: var(--muted); }
+.bias-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.bias-grid button {
+  min-height: 74px; border: 0; border-radius: 14px; cursor: pointer; font-weight: 800; line-height: 1.25;
+  transition: transform 0.12s;
+}
+.bias-grid button:hover { transform: translateY(-2px); }
+.bias-grid small { display: block; font-weight: 600; opacity: 0.9; }
+.bias .all { width: 100%; margin-top: 10px; min-height: 48px; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; }
+.check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; margin: 6px 0 14px; }
+.tabs button { border: 0; border-radius: 999px; padding: 6px 14px; background: rgba(127, 127, 127, 0.12); cursor: pointer; font-weight: 700; }
+.tabs button.on { background: var(--accent); color: var(--accent-ink); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.card { border: 2px solid var(--c); border-radius: 14px; padding: 12px; display: grid; gap: 4px; }
+.card .name { background: var(--c); color: var(--ink); border-radius: 10px; padding: 6px 10px; font-family: Comfortaa, sans-serif; font-weight: 700; font-size: 20px; }
+.card .meta { font-size: 13px; color: var(--muted); }
+.card button { margin-top: 6px; border: 0; border-radius: 10px; min-height: 34px; background: var(--c); color: var(--ink); font-weight: 800; cursor: pointer; }
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.list li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; cursor: pointer; }
+.list li:hover { background: rgba(127, 127, 127, 0.12); }
+.list li .grow { flex: 1; }
+.list li .sub { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.video { position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #000; }
+.video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.term {
+  background: #1A0B24; color: #F3E8F8; font: 13px/1.35 ui-monospace, Menlo, Consolas, monospace;
+  padding: 12px; min-height: 100%; white-space: pre-wrap; word-break: break-word;
+}
+.term .prompt { color: #FF9CCF; }
+.term input { background: transparent; border: 0; outline: 0; color: inherit; font: inherit; width: 60%; }
+.files { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.files figure { margin: 0; cursor: pointer; }
+.files img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 12px; display: block; }
+.files figcaption { font-size: 12px; color: var(--muted); padding-top: 4px; }
+.crumbs { color: var(--muted); margin-bottom: 12px; font-size: 13px; }
+.viewer img { width: 100%; border-radius: 12px; display: block; }
+.viewer p { color: var(--muted); font-size: 13px; }
+.viewer a, .files a { color: var(--accent); }
+.browser { display: flex; flex-direction: column; height: 100%; margin: -18px; }
+.browser .bar { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+.browser .bar div { background: rgba(127, 127, 127, 0.12); border-radius: 999px; padding: 6px 14px; font-size: 13px; color: var(--muted); }
+.browser iframe { flex: 1; border: 0; width: 100%; background: #fff; }
+#toasts { position: absolute; right: 16px; bottom: 82px; display: grid; gap: 10px; z-index: 6000; width: min(340px, calc(100vw - 32px)); }
+.toast {
+  display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 14px;
+  background: var(--panel-solid); border: 1px solid var(--line); box-shadow: var(--shadow); animation: pop 0.2s ease-out;
+}
+.toast img { width: 34px; height: 34px; flex: none; }
+.toast b { display: block; }
+.toast span { color: var(--muted); font-size: 13px; }
+#confetti { position: absolute; inset: 0; pointer-events: none; z-index: 7000; }
+.demo-note { position: absolute; left: 14px; bottom: 80px; color: #fff; font-size: 12px; opacity: 0.85; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
+.demo-note a { color: #fff; }
+@media (max-width: 760px) {
+  .widget { top: 10px; right: 10px; left: 112px; width: auto; padding: 10px 12px; }
+  .widget ul { display: none; }
+  .widget .count { font-size: 20px; margin-bottom: 0; }
+  .win { inset: 8px 8px 76px 8px !important; width: auto !important; height: auto !important; min-width: 0; }
+  .win header { cursor: default; }
+  .tray .clock { display: none; }
+  .tray { right: 8px; }
+  #taskbar { justify-content: flex-start; padding-left: 6px; }
+  .tb-btn { width: 42px; }
+  .start .apps { grid-template-columns: repeat(3, 1fr); }
+  .bias-grid { grid-template-columns: repeat(2, 1fr); }
+  .links { grid-template-columns: 1fr; }
+  .demo-note { display: none; }
+}
+</style>
+</head>
+<body>
+<div id="desktop">
+  <div class="wall" id="wall-a"></div>
+  <div class="wall hidden" id="wall-b"></div>
+  <button class="desk-icon" id="install-icon"><img src="../brand/logo-256.png" alt=""><span data-t="Install ManifestOS"></span></button>
+  <section class="widget" id="widget" aria-live="polite">
+    <h4 data-t="Manifest Countdown"></h4>
+    <div class="next" id="w-title"></div>
+    <div class="count" id="w-count"></div>
+    <ul id="w-list"></ul>
+  </section>
+  <div id="layer"></div>
+  <div class="demo-note"><span data-t="This is a web demo."></span> <a href="https://github.com/manifest-linux/manifestos/releases/latest" data-t="Download the real ManifestOS"></a></div>
+  <div id="toasts"></div>
+  <canvas id="confetti"></canvas>
+  <div class="start" id="start" hidden>
+    <input id="search" type="search" autocomplete="off">
+    <div class="apps" id="start-apps"></div>
+    <div class="foot">
+      <span>ManifestOS · <span data-t="web demo"></span></span>
+      <a class="btn" href="https://github.com/manifest-linux/manifestos/releases/latest" data-t="Download"></a>
+    </div>
+  </div>
+  <nav id="taskbar">
+    <div class="tb-apps" id="tb-apps"></div>
+    <div class="tray">
+      <button class="pill" id="lang"></button>
+      <div class="clock" id="clock"></div>
+    </div>
+  </nav>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var LINKS = {
+    releases: "https://github.com/manifest-linux/manifestos/releases/latest",
+    site: "../",
+    playlist: "https://www.youtube-nocookie.com/embed/videoseries?list=UU3aqBnkDAfMh5eUmiYi_tfQ"
+  };
+  var PHOTOS = [
+    { file: "../photos/manifest-bursa.jpg", credit: "ZethRod", license: "CC0", source: "https://commons.wikimedia.org/wiki/File:Manifest_Bursa_050626.jpg", caption: "Bursa concert, 5 June 2026" },
+    { file: "../photos/manifest-concert-1.jpg", credit: "Shadow4dark", license: "CC0", source: "https://commons.wikimedia.org/wiki/File:Manifest_at_concert.jpg", caption: "On stage" },
+    { file: "../photos/manifest-concert-2.jpg", credit: "Shadow4dark", license: "CC0", source: "https://commons.wikimedia.org/wiki/File:Manifest_at_concert_2.jpg", caption: "On stage" },
+    { file: "../photos/hilal-yelekci.jpg", credit: "07", license: "CC BY-SA 4.0", source: "https://commons.wikimedia.org/wiki/File:Hilal_Yelek%C3%A7i.jpg", caption: "Hilal in Antalya, 29 May 2026" }
+  ];
+  var DEMO_TR = {
+    "Install ManifestOS": "ManifestOS'u Kur",
+    "This is a web demo.": "Bu bir web demosu.",
+    "Download the real ManifestOS": "Gerçek ManifestOS'u indir",
+    "web demo": "web demosu",
+    "Download": "İndir",
+    "Search apps": "Uygulama ara",
+    "Manifest Hub": "Manifest Hub",
+    "Terminal": "Terminal",
+    "Fan Art": "Fan Art",
+    "Firefox": "Firefox",
+    "Birthday surprise": "Doğum günü sürprizi",
+    "Website": "Web sitesi",
+    "Welcome to ManifestOS": "ManifestOS'a hoş geldin",
+    "Pick your bias to get started.": "Başlamak için bias'ını seç.",
+    "Pictures": "Resimler",
+    "Concert photos by fans, free to share.": "Hayranların çektiği konser fotoğrafları, paylaşmak serbest.",
+    "Photo by {name}": "Fotoğraf: {name}",
+    "Day": "Gündüz",
+    "{d} days {hms}": "{d} gün {hms}",
+    "Try ManifestOS for real": "ManifestOS'u gerçekten dene",
+    "This page only imitates the desktop. Download the ISO, write it to a USB stick and boot it to try the real system, no install needed.": "Bu sayfa masaüstünü sadece taklit ediyor. Gerçek sistemi denemek için ISO'yu indir, USB belleğe yaz ve ondan başlat. Kurman bile gerekmez.",
+    "Download the ISO": "ISO'yu indir",
+    "Type help to see what I can do.": "Neler yapabildiğimi görmek için help yaz.",
+    "Commands": "Komutlar",
+    "show the banner, a fact and the next event": "banner, bilgi ve sıradaki etkinlik",
+    "list the members": "üyeleri listele",
+    "next birthday or event": "sıradaki doğum günü veya etkinlik",
+    "set your bias": "bias'ını değiştir",
+    "system info": "sistem bilgisi",
+    "clear the screen": "ekranı temizle",
+    "command not found": "komut bulunamadı",
+    "Nice try. You are already root of our hearts.": "Güzel deneme. Zaten kalbimizin root'usun.",
+    "Happy birthday, {name}!": "İyi ki doğdun {name}!",
+    "This is what ManifestOS does on her birthday.": "ManifestOS onun doğum gününde tam olarak bunu yapıyor.",
+    "Play on YouTube Music": "YouTube Music'te dinle",
+    "Tap a song to play it on YouTube Music.": "YouTube Music'te dinlemek için şarkıya dokun."
+  };
+
+  var band = null;
+  var catalog = {};
+  var lang = /^tr\b/i.test(navigator.language || "") ? "tr" : "en";
+  var match = /[?&]lang=(tr|en)\b/.exec(location.search);
+  if (match) lang = match[1];
+  var state = { bias: "group", night: false };
+  var z = 100;
+  var openWindows = {};
+
+  function t(text, values) {
+    var out = lang === "tr" ? (DEMO_TR[text] || catalog[text] || text) : text;
+    if (values) {
+      Object.keys(values).forEach(function (key) { out = out.split("{" + key + "}").join(values[key]); });
+    }
+    return out;
+  }
+
+  function el(tag, attrs, children) {
+    var node = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (key) {
+      if (key === "text") node.textContent = attrs[key];
+      else if (key === "style") node.style.cssText = attrs[key];
+      else if (key.slice(0, 2) === "on") node.addEventListener(key.slice(2), attrs[key]);
+      else node.setAttribute(key, attrs[key]);
+    });
+    (children || []).forEach(function (child) { if (child) node.appendChild(child); });
+    return node;
+  }
+
+  function hexRgb(hex) {
+    hex = hex.replace("#", "");
+    return [0, 2, 4].map(function (i) { return parseInt(hex.slice(i, i + 2), 16); });
+  }
+
+  function inkOn(hex) {
+    var c = hexRgb(hex);
+    return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2] > 170 ? "#1B1020" : "#FFFFFF";
+  }
+
+  function member(id) {
+    return band.members.filter(function (m) { return m.id === id; })[0] || null;
+  }
+
+  function colorOf(id) {
+    var m = member(id);
+    return m ? m.color : band.group.color;
+  }
+
+  function displayName(id) {
+    var m = member(id);
+    return m ? m.short : t("Whole group");
+  }
+
+  function startOfDay(date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
+
+  function parseDay(value) {
+    var p = value.split("-").map(Number);
+    return { y: p[0], m: p[1], d: p[2] };
+  }
+
+  function nextOccurrence(day, now) {
+    var today = startOfDay(now);
+    var when = new Date(today.getFullYear(), day.m - 1, day.d);
+    if (when < today) when = new Date(today.getFullYear() + 1, day.m - 1, day.d);
+    return when;
+  }
+
+  function formatDate(day) {
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    return day.d + " " + t(months[day.m - 1]) + (day.y ? " " + day.y : "");
+  }
+
+  function upcoming(now) {
+    var items = band.members.map(function (m) {
+      var born = parseDay(m.birthday);
+      var when = nextOccurrence(born, now);
+      return { title: t("{name}'s birthday", { name: m.short }), when: when, color: m.color, member: m.id, age: when.getFullYear() - born.y };
+    });
+    (band.anniversaries || []).forEach(function (a) {
+      var first = parseDay(a.date);
+      var when = nextOccurrence(first, now);
+      if (when.getFullYear() - first.y >= 1) items.push({ title: t(a.title), when: when, color: band.group.color });
+    });
+    return items.sort(function (a, b) { return a.when - b.when; });
+  }
+
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+  function countdown(item, now) {
+    var diff = item.when - now;
+    if (diff <= 0) return t("Today!");
+    var days = Math.floor(diff / 864e5);
+    var rest = diff % 864e5;
+    var hms = pad(Math.floor(rest / 36e5)) + ":" + pad(Math.floor(rest % 36e5 / 6e4)) + ":" + pad(Math.floor(rest % 6e4 / 1e3));
+    return t("{d} days {hms}", { d: days, hms: hms });
+  }
+
+  function shortCountdown(item, now) {
+    var days = Math.round((item.when - startOfDay(now)) / 864e5);
+    if (days <= 0) return t("Today!");
+    if (days === 1) return t("Tomorrow");
+    return t("in {days} days", { days: days });
+  }
+
+  var walls = [document.getElementById("wall-a"), document.getElementById("wall-b")];
+  var wallIndex = 0;
+  var currentWall = "group";
+
+  function wallpaperUrl(name) {
+    return "wallpapers/" + name + (window.innerHeight > window.innerWidth ? "-portrait" : "") + ".jpg";
+  }
+
+  function setWallpaper(name) {
+    currentWall = name;
+    var url = wallpaperUrl(name);
+    var next = walls[1 - wallIndex];
+    var image = new Image();
+    image.onload = function () {
+      if (url !== wallpaperUrl(currentWall)) return;
+      next.style.backgroundImage = "url(" + url + ")";
+      next.classList.remove("hidden");
+      walls[wallIndex].classList.add("hidden");
+      wallIndex = 1 - wallIndex;
+    };
+    image.src = url;
+  }
+
+  function setAccent(color) {
+    document.documentElement.style.setProperty("--accent", color);
+    document.documentElement.style.setProperty("--accent-ink", inkOn(color));
+  }
+
+  function applyBias(id) {
+    state.bias = member(id) ? id : "group";
+    setAccent(colorOf(state.bias));
+    setWallpaper(state.bias);
+    toast(t("Bias updated"), t("Your desktop now wears {name}'s colors.", { name: displayName(state.bias) }));
+    renderWidget();
+  }
+
+  function setNight(on) {
+    state.night = on;
+    document.body.classList.toggle("night", on);
+  }
+
+  function toast(title, body, icon) {
+    var box = document.getElementById("toasts");
+    var node = el("div", { class: "toast", role: "status" }, [
+      el("img", { src: icon || "../brand/logo-256.png", alt: "" }),
+      el("div", {}, [el("b", { text: title }), el("span", { text: body })])
+    ]);
+    box.appendChild(node);
+    setTimeout(function () { node.remove(); }, 4200);
+  }
+
+  function renderWidget() {
+    var now = new Date();
+    var items = upcoming(now);
+    var first = items[0];
+    document.getElementById("w-title").textContent = first.title;
+    var count = document.getElementById("w-count");
+    count.textContent = countdown(first, now);
+    count.style.color = first.color;
+    var list = document.getElementById("w-list");
+    list.textContent = "";
+    items.slice(1, 5).forEach(function (item) {
+      list.appendChild(el("li", {}, [
+        el("span", { class: "dot", style: "background:" + item.color }),
+        el("span", { class: "t", text: item.title }),
+        el("span", { class: "d", text: shortCountdown(item, now) })
+      ]));
+    });
+  }
+
+  function tickClock() {
+    var now = new Date();
+    document.getElementById("clock").innerHTML = pad(now.getHours()) + ":" + pad(now.getMinutes()) + "<br>" + pad(now.getDate()) + "." + pad(now.getMonth() + 1) + "." + now.getFullYear();
+    var first = upcoming(now)[0];
+    var count = document.getElementById("w-count");
+    if (first) count.textContent = countdown(first, now);
+  }
+
+  function isNarrow() { return window.matchMedia("(max-width: 760px)").matches; }
+
+  function focusWindow(win) {
+    z += 1;
+    win.style.zIndex = z;
+  }
+
+  function closeWindow(id) {
+    var win = openWindows[id];
+    if (!win) return;
+    win.remove();
+    delete openWindows[id];
+    markTaskbar();
+  }
+
+  function openWindow(id, title, icon, content, size) {
+    if (openWindows[id]) {
+      focusWindow(openWindows[id]);
+      return openWindows[id];
+    }
+    var width = Math.min(size.w, window.innerWidth - 40);
+    var height = Math.min(size.h, window.innerHeight - 110);
+    var count = Object.keys(openWindows).length;
+    var left = Math.max(10, (window.innerWidth - width) / 2 + count * 26);
+    var top = Math.max(10, (window.innerHeight - 80 - height) / 2 + count * 22);
+    var close = el("button", { "aria-label": "Close", text: "×", onclick: function () { closeWindow(id); } });
+    var header = el("header", {}, [el("img", { src: icon, alt: "" }), el("b", { text: title }), close]);
+    var body = el("div", { class: "body" }, [content]);
+    var win = el("div", { class: "win", role: "dialog", "aria-label": title, style: "left:" + left + "px;top:" + top + "px;width:" + width + "px;height:" + height + "px" }, [header, body]);
+    win.addEventListener("pointerdown", function () { focusWindow(win); });
+    header.addEventListener("pointerdown", function (event) {
+      if (isNarrow() || event.target === close) return;
+      var startX = event.clientX - win.offsetLeft;
+      var startY = event.clientY - win.offsetTop;
+      header.setPointerCapture(event.pointerId);
+      function move(e) {
+        win.style.left = Math.min(window.innerWidth - 80, Math.max(-width + 80, e.clientX - startX)) + "px";
+        win.style.top = Math.min(window.innerHeight - 120, Math.max(0, e.clientY - startY)) + "px";
+      }
+      function up() {
+        header.removeEventListener("pointermove", move);
+        header.removeEventListener("pointerup", up);
+      }
+      header.addEventListener("pointermove", move);
+      header.addEventListener("pointerup", up);
+    });
+    document.getElementById("layer").appendChild(win);
+    openWindows[id] = win;
+    focusWindow(win);
+    markTaskbar();
+    return win;
+  }
+
+  function biasApp() {
+    var night = el("input", { type: "checkbox" });
+    night.checked = state.night;
+    night.addEventListener("change", function () { setNight(night.checked); });
+    var grid = el("div", { class: "bias-grid" });
+    band.members.forEach(function (m) {
+      grid.appendChild(el("button", {
+        style: "background:" + m.color + ";color:" + inkOn(m.color),
+        onclick: function () { applyBias(m.id); closeWindow("bias"); }
+      }, [document.createTextNode(m.short), m.role ? el("small", { text: t(m.role) }) : null]));
+    });
+    var all = el("button", { class: "btn all", text: t("I love them all"), onclick: function () { applyBias("group"); closeWindow("bias"); } });
+    var later = el("button", { class: "btn ghost", text: t("Maybe later"), onclick: function () { closeWindow("bias"); } });
+    var content = el("div", { class: "bias" }, [
+      el("h2", { text: t("Who's your bias?") }),
+      el("p", { text: t("Your wallpaper and colors will match her. You can change this any time in Manifest Hub.") }),
+      grid, all,
+      el("div", { class: "row" }, [el("label", { class: "check" }, [night, document.createTextNode(t("Night mode"))]), later])
+    ]);
+    openWindow("bias", t("Pick your bias"), "../brand/logo-256.png", content, { w: 560, h: 520 });
+  }
+
+  function hubMembers() {
+    var now = new Date();
+    var cards = el("div", { class: "cards" });
+    band.members.forEach(function (m) {
+      var born = parseDay(m.birthday);
+      var when = nextOccurrence(born, now);
+      var days = Math.round((when - startOfDay(now)) / 864e5);
+      var age = now.getFullYear() - born.y - ((now.getMonth() + 1 < born.m || (now.getMonth() + 1 === born.m && now.getDate() < born.d)) ? 1 : 0);
+      cards.appendChild(el("div", { class: "card", style: "--c:" + m.color + ";--ink:" + inkOn(m.color) }, [
+        el("div", { class: "name", text: m.short }),
+        el("b", { text: m.name }),
+        el("div", { class: "meta", text: "🎂 " + formatDate(born) + ", " + t("{age} years old", { age: age }) }),
+        m.role ? el("div", { class: "meta", text: "⭐ " + t(m.role) }) : null,
+        el("div", { class: "meta", text: "⏳ " + (days === 0 ? t("Birthday is today!") : t("Next birthday in {days} days", { days: days })) }),
+        el("button", { text: t("Make her my bias"), onclick: function () { applyBias(m.id); } })
+      ]));
+    });
+    return cards;
+  }
+
+  function hubVideos() {
+    return el("div", { class: "video" }, [el("iframe", {
+      src: LINKS.playlist, title: "manifest on YouTube", loading: "lazy", allowfullscreen: "",
+      allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+      referrerpolicy: "strict-origin-when-cross-origin"
+    })]);
+  }
+
+  function hubMusic() {
+    var list = el("ul", { class: "list" });
+    var entries = (band.albums || []).map(function (a) { return { title: a.title, sub: "💿 " + formatDate(parseDay(a.date)) }; });
+    (band.songs || []).forEach(function (s) {
+      entries.push({ title: s.title + (s.featuring ? " (feat. " + s.featuring + ")" : ""), query: s.title, sub: s.year ? String(s.year) : "" });
+    });
+    entries.forEach(function (entry, index) {
+      var color = band.members[index % band.members.length].color;
+      list.appendChild(el("li", {
+        title: t("Play on YouTube Music"),
+        onclick: function () { window.open("https://music.youtube.com/search?q=" + encodeURIComponent("manifest " + (entry.query || entry.title)), "_blank", "noopener"); }
+      }, [el("span", { class: "dot", style: "background:" + color }), el("span", { class: "grow", text: entry.title }), el("span", { class: "sub", text: entry.sub })]));
+    });
+    return el("div", {}, [el("p", { style: "margin:0 0 10px;color:var(--muted)", text: t("Tap a song to play it on YouTube Music.") }), list]);
+  }
+
+  function hubCountdown() {
+    var now = new Date();
+    var list = el("ul", { class: "list" });
+    upcoming(now).forEach(function (item) {
+      list.appendChild(el("li", {}, [
+        el("span", { class: "dot", style: "background:" + item.color }),
+        el("span", { class: "grow", text: item.title }),
+        el("span", { class: "sub", text: shortCountdown(item, now) })
+      ]));
+    });
+    return list;
+  }
+
+  function hubLinks() {
+    var links = band.group.links;
+    var grid = el("div", { class: "links" });
+    [["YouTube", links.youtube], ["Instagram", links.instagram], ["TikTok", links.tiktok], ["Spotify", links.spotify_search]].forEach(function (pair, index) {
+      var color = band.members[index % band.members.length].color;
+      grid.appendChild(el("a", { class: "btn", href: pair[1], target: "_blank", rel: "noopener", style: "background:" + color + ";color:" + inkOn(color), text: pair[0] }));
+    });
+    return grid;
+  }
+
+  function hubApp() {
+    var tabs = [["Members", hubMembers], ["Videos", hubVideos], ["Music", hubMusic], ["Countdown", hubCountdown], ["Links", hubLinks]];
+    var bar = el("div", { class: "tabs" });
+    var panel = el("div");
+    function show(index) {
+      Array.prototype.forEach.call(bar.children, function (b, i) { b.classList.toggle("on", i === index); });
+      panel.textContent = "";
+      panel.appendChild(tabs[index][1]());
+    }
+    tabs.forEach(function (tab, index) { bar.appendChild(el("button", { text: t(tab[0]), onclick: function () { show(index); } })); });
+    var content = el("div", { class: "hub" }, [el("h2", { text: "manifest hub", style: "color:var(--accent)" }), bar, panel,
+      el("p", { class: "meta", style: "color:var(--muted);font-size:12px;margin-top:16px", text: t("Unofficial fan project. Not affiliated with manifest or Hypers New Media.") })]);
+    show(0);
+    openWindow("hub", "Manifest Hub", "../brand/avatar.png", content, { w: 920, h: 620 });
+  }
+
+  function ringRows(text) {
+    var radius = 6, inner = 3.6, aspect = 2, width = radius * aspect, rows = [];
+    for (var y = -radius; y <= radius; y++) {
+      var row = [];
+      for (var x = -width; x <= width; x++) {
+        var dx = x / aspect, dist = Math.sqrt(dx * dx + y * y);
+        if (dist >= inner && dist <= radius + 0.35) {
+          var angle = (Math.atan2(dx, -y) * 180 / Math.PI + 360) % 360;
+          row.push([Math.floor(angle / 60) % 6, "█"]);
+        } else row.push([null, " "]);
+      }
+      rows.push(row);
+    }
+    var mid = rows[radius], start = width - Math.floor(text.length / 2);
+    for (var i = 0; i < text.length; i++) mid[start + i] = [-1, text[i]];
+    return rows;
+  }
+
+  function ringNode() {
+    var colors = band.members.map(function (m) { return m.color; });
+    var frag = document.createDocumentFragment();
+    ringRows("manifest").forEach(function (row) {
+      row.forEach(function (cell) {
+        if (cell[0] === null) frag.appendChild(document.createTextNode(cell[1]));
+        else frag.appendChild(el("span", { style: cell[0] === -1 ? "color:#fff;font-weight:bold" : "color:" + colors[cell[0]], text: cell[1] }));
+      });
+      frag.appendChild(document.createTextNode("\n"));
+    });
+    return frag;
+  }
+
+  function terminalApp() {
+    var out = el("div");
+    var input = el("input", { "aria-label": "Terminal input", autocomplete: "off", autocapitalize: "off", spellcheck: "false" });
+    var line = el("div", {}, [el("span", { class: "prompt", text: "manifest@manifestos:~$ " }), input]);
+    var term = el("div", { class: "term", onclick: function () { input.focus(); } }, [out, line]);
+    function print(node) {
+      out.appendChild(typeof node === "string" ? document.createTextNode(node + "\n") : node);
+      term.parentNode.scrollTop = term.parentNode.scrollHeight;
+    }
+    function fact() {
+      var facts = (band.facts || []).map(function (f) { return t(f); });
+      band.members.forEach(function (m) { facts.push(t("{name} was born on {date}.", { name: m.short, date: formatDate(parseDay(m.birthday)) })); });
+      return facts[Math.floor(Math.random() * facts.length)];
+    }
+    function run(cmd) {
+      var parts = cmd.trim().split(/\s+/), now = new Date();
+      if (!parts[0]) return;
+      if (parts[0] === "help") {
+        print(t("Commands") + ":\n  manifest            " + t("show the banner, a fact and the next event") + "\n  manifest members    " + t("list the members") + "\n  manifest next       " + t("next birthday or event") + "\n  manifest bias NAME  " + t("set your bias") + "\n  fastfetch           " + t("system info") + "\n  clear               " + t("clear the screen"));
+      } else if (parts[0] === "clear") {
+        out.textContent = "";
+      } else if (parts[0] === "sudo") {
+        print(t("Nice try. You are already root of our hearts."));
+      } else if (parts[0] === "fastfetch") {
+        print(ringNode());
+        print("manifest@manifestos\n-------------------\nOS: ManifestOS (Debian 13 trixie) x86_64\nDE: KDE Plasma 6.3\nShell: bash\nBias: " + displayName(state.bias) + "\nTheme: " + (state.night ? "ManifestOS Night" : "ManifestOS"));
+      } else if (parts[0] === "manifest" && (!parts[1] || parts[1] === "banner")) {
+        print(ringNode());
+        print("  ManifestOS  " + fact());
+        var next = upcoming(now)[0];
+        print("  ● " + next.title + "  ·  " + shortCountdown(next, now));
+      } else if (parts[0] === "manifest" && parts[1] === "members") {
+        band.members.forEach(function (m) {
+          print(el("span", {}, [
+            el("span", { style: "color:" + m.color, text: "● " }),
+            document.createTextNode(m.name + (m.role ? "  " + t(m.role) : "") + "\n    " + formatDate(parseDay(m.birthday)) + "\n")
+          ]));
+        });
+      } else if (parts[0] === "manifest" && parts[1] === "next") {
+        var item = upcoming(now)[0];
+        print(item.title + "  ·  " + countdown(item, now));
+      } else if (parts[0] === "manifest" && parts[1] === "fact") {
+        print(fact());
+      } else if (parts[0] === "manifest" && parts[1] === "bias") {
+        var wanted = (parts[2] || "").toLowerCase();
+        if (["ot6", "all", "group", "manifest"].indexOf(wanted) >= 0) wanted = "group";
+        if (!wanted) print(displayName(state.bias));
+        else if (wanted !== "group" && !member(wanted)) print(t("Unknown member. Pick one of: {names}, group", { names: band.members.map(function (m) { return m.id; }).join(", ") }));
+        else { applyBias(wanted); print(t("Your desktop now wears {name}'s colors.", { name: displayName(wanted) })); }
+      } else {
+        print(parts[0] + ": " + t("command not found"));
+      }
+    }
+    input.addEventListener("keydown", function (event) {
+      if (event.key !== "Enter") return;
+      var cmd = input.value;
+      input.value = "";
+      print("manifest@manifestos:~$ " + cmd);
+      if (cmd.trim() === "exit") { closeWindow("terminal"); return; }
+      run(cmd);
+    });
+    openWindow("terminal", "Konsole", "../brand/logo-256.png", term, { w: 720, h: 500 }).querySelector(".body").style.padding = "0";
+    print(t("Type help to see what I can do."));
+    run("manifest");
+    if (!isNarrow()) input.focus();
+  }
+
+  function viewer(photo) {
+    var content = el("div", { class: "viewer" }, [
+      el("img", { src: photo.file, alt: t(photo.caption) }),
+      el("p", {}, [document.createTextNode(t(photo.caption) + " · " + t("Photo by {name}", { name: photo.credit }) + " · "), el("a", { href: photo.source, target: "_blank", rel: "noopener", text: photo.license })])
+    ]);
+    closeWindow("viewer");
+    openWindow("viewer", "Gwenview", "../brand/logo-256.png", content, { w: 760, h: 640 });
+  }
+
+  function filesApp() {
+    var grid = el("div", { class: "files" });
+    PHOTOS.forEach(function (photo) {
+      grid.appendChild(el("figure", { onclick: function () { viewer(photo); } }, [
+        el("img", { src: photo.file, alt: t(photo.caption), loading: "lazy" }),
+        el("figcaption", { text: t("Photo by {name}", { name: photo.credit }) + " · " + photo.license })
+      ]));
+    });
+    var content = el("div", {}, [
+      el("div", { class: "crumbs", text: "🏠 › " + t("Pictures") + " › Manifest Fan Art" }),
+      el("p", { style: "margin:0 0 12px;color:var(--muted)", text: t("Concert photos by fans, free to share.") }),
+      grid
+    ]);
+    openWindow("files", "Dolphin", "../brand/logo-256.png", content, { w: 820, h: 560 });
+  }
+
+  function browserApp() {
+    var content = el("div", { class: "browser" }, [
+      el("div", { class: "bar" }, [el("div", { text: "manifest-linux.github.io/manifestos" })]),
+      el("iframe", { src: LINKS.site, title: "ManifestOS website" })
+    ]);
+    openWindow("browser", "Firefox", "../brand/logo-256.png", content, { w: 980, h: 640 });
+  }
+
+  function installApp() {
+    var content = el("div", { class: "bias" }, [
+      el("h2", { text: t("Try ManifestOS for real") }),
+      el("p", { text: t("This page only imitates the desktop. Download the ISO, write it to a USB stick and boot it to try the real system, no install needed.") }),
+      el("div", { class: "row", style: "justify-content:flex-start" }, [
+        el("a", { class: "btn", href: LINKS.releases, target: "_blank", rel: "noopener", text: t("Download the ISO") }),
+        el("a", { class: "btn ghost", href: LINKS.site, text: t("Website") })
+      ])
+    ]);
+    openWindow("install", t("Install ManifestOS"), "../brand/logo-256.png", content, { w: 520, h: 300 });
+  }
+
+  function birthdaySurprise() {
+    var now = new Date();
+    var next = upcoming(now).filter(function (i) { return i.member; })[0];
+    var m = member(next.member);
+    setAccent(m.color);
+    setWallpaper(m.id + "-birthday");
+    confetti(band.members.map(function (x) { return x.color; }));
+    toast(t("Happy birthday, {name}!", { name: m.short }) + " 🎂", t("This is what ManifestOS does on her birthday."));
+    setTimeout(function () { setAccent(colorOf(state.bias)); setWallpaper(state.bias); }, 9000);
+  }
+
+  function confetti(colors) {
+    var canvas = document.getElementById("confetti");
+    var ctx = canvas.getContext("2d");
+    var ratio = window.devicePixelRatio || 1;
+    canvas.width = innerWidth * ratio;
+    canvas.height = innerHeight * ratio;
+    ctx.scale(ratio, ratio);
+    var pieces = [];
+    for (var i = 0; i < 180; i++) {
+      pieces.push({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight * 0.6, w: 6 + Math.random() * 6, h: 10 + Math.random() * 10,
+        vy: 2 + Math.random() * 3, vx: -1.5 + Math.random() * 3, r: Math.random() * 6, vr: -0.2 + Math.random() * 0.4, c: colors[i % colors.length] });
+    }
+    var start = performance.now();
+    (function frame(time) {
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      pieces.forEach(function (p) {
+        p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore();
+      });
+      if (time - start < 5500) requestAnimationFrame(frame);
+      else ctx.clearRect(0, 0, innerWidth, innerHeight);
+    })(start);
+  }
+
+  var ICONS = {
+    files: '<svg viewBox="0 0 32 32"><path d="M3 8a3 3 0 0 1 3-3h7l3 3h10a3 3 0 0 1 3 3v13a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z" fill="#F7B7DA"/><path d="M3 12h26v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z" fill="#E0479E"/></svg>',
+    browser: '<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="#FF9F43"/><circle cx="16" cy="16" r="9" fill="#9B6BFF"/><path d="M7 16a9 9 0 0 0 18 0" fill="#3FB8F5"/></svg>',
+    terminal: '<svg viewBox="0 0 32 32"><rect x="3" y="5" width="26" height="22" rx="5" fill="#2B1438"/><path d="M9 12l5 4-5 4" stroke="#FF9CCF" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 21h7" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>',
+    gift: '<svg viewBox="0 0 32 32"><rect x="5" y="13" width="22" height="15" rx="3" fill="#FF5C5C"/><rect x="3" y="9" width="26" height="6" rx="2" fill="#FF4FA3"/><rect x="14.5" y="9" width="3" height="19" fill="#FFD25C"/><path d="M16 9c-3-6-9-4-6-1 1.5 1.5 6 1 6 1zm0 0c3-6 9-4 6-1-1.5 1.5-6 1-6 1z" fill="#FFD25C"/></svg>',
+    moon: '<svg viewBox="0 0 32 32"><path d="M21 4a12 12 0 1 0 7 19A10 10 0 0 1 21 4z" fill="#9B6BFF"/></svg>',
+    globe: '<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="#2ECF96"/><path d="M3 16h26M16 3c5 6 5 20 0 26M16 3c-5 6-5 20 0 26" stroke="#fff" stroke-width="1.6" fill="none"/></svg>'
+  };
+
+  var APPS = [
+    { id: "hub", label: "Manifest Hub", img: "../brand/avatar.png", run: hubApp, pinned: true },
+    { id: "bias", label: "Pick your bias", img: "../brand/logo-256.png", run: biasApp },
+    { id: "terminal", label: "Terminal", svg: ICONS.terminal, run: terminalApp, pinned: true },
+    { id: "files", label: "Fan Art", svg: ICONS.files, run: filesApp, pinned: true },
+    { id: "browser", label: "Firefox", svg: ICONS.browser, run: browserApp, pinned: true },
+    { id: "birthday", label: "Birthday surprise", svg: ICONS.gift, run: birthdaySurprise },
+    { id: "night", label: "Night mode", svg: ICONS.moon, run: function () { setNight(!state.night); } },
+    { id: "install", label: "Install ManifestOS", img: "../brand/logo-256.png", run: installApp },
+    { id: "site", label: "Website", svg: ICONS.globe, run: function () { location.href = LINKS.site; } }
+  ];
+
+  function iconNode(app) {
+    var box = el("span", { class: "ic" });
+    if (app.img) box.appendChild(el("img", { src: app.img, alt: "" }));
+    else box.innerHTML = app.svg;
+    return box;
+  }
+
+  function toggleStart(force) {
+    var start = document.getElementById("start");
+    var show = force === undefined ? start.hidden : force;
+    start.hidden = !show;
+    if (show) {
+      var search = document.getElementById("search");
+      search.value = "";
+      filterStart("");
+      if (!isNarrow()) search.focus();
+    }
+  }
+
+  function filterStart(query) {
+    query = query.toLowerCase();
+    var box = document.getElementById("start-apps");
+    box.textContent = "";
+    APPS.filter(function (app) { return t(app.label).toLowerCase().indexOf(query) >= 0; }).forEach(function (app) {
+      box.appendChild(el("button", { class: "app", onclick: function () { toggleStart(false); app.run(); } }, [iconNode(app), el("span", { text: t(app.label) })]));
+    });
+  }
+
+  function buildTaskbar() {
+    var bar = document.getElementById("tb-apps");
+    bar.textContent = "";
+    bar.appendChild(el("button", { class: "tb-btn", id: "start-btn", "aria-label": "Start", onclick: function (event) { event.stopPropagation(); toggleStart(); } }, [el("img", { src: "../brand/logo-256.png", alt: "" })]));
+    APPS.filter(function (app) { return app.pinned; }).forEach(function (app) {
+      var button = el("button", { class: "tb-btn", "data-app": app.id, "aria-label": t(app.label), title: t(app.label), onclick: function () { app.run(); } });
+      if (app.img) button.appendChild(el("img", { src: app.img, alt: "" }));
+      else button.innerHTML = app.svg;
+      bar.appendChild(button);
+    });
+    markTaskbar();
+  }
+
+  function markTaskbar() {
+    Array.prototype.forEach.call(document.querySelectorAll(".tb-btn[data-app]"), function (button) {
+      button.classList.toggle("open", !!openWindows[button.getAttribute("data-app")]);
+    });
+  }
+
+  function translateStatic() {
+    document.documentElement.lang = lang;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-t]"), function (node) { node.textContent = t(node.getAttribute("data-t")); });
+    document.getElementById("search").placeholder = t("Search apps");
+    document.getElementById("lang").textContent = lang === "tr" ? "TR" : "EN";
+  }
+
+  function setLanguage(next) {
+    lang = next;
+    translateStatic();
+    buildTaskbar();
+    renderWidget();
+    Object.keys(openWindows).forEach(closeWindow);
+  }
+
+  function boot(data, tr) {
+    band = data;
+    catalog = tr || {};
+    setAccent(band.group.color);
+    walls[0].style.backgroundImage = "url(" + wallpaperUrl("group") + ")";
+    var portrait = window.innerHeight > window.innerWidth;
+    window.addEventListener("resize", function () {
+      var now = window.innerHeight > window.innerWidth;
+      if (now !== portrait) { portrait = now; setWallpaper(currentWall); }
+    });
+    translateStatic();
+    buildTaskbar();
+    renderWidget();
+    tickClock();
+    setInterval(tickClock, 1000);
+    setInterval(renderWidget, 60000);
+    document.getElementById("search").addEventListener("input", function (event) { filterStart(event.target.value); });
+    document.getElementById("lang").addEventListener("click", function () { setLanguage(lang === "tr" ? "en" : "tr"); });
+    document.getElementById("install-icon").addEventListener("click", installApp);
+    document.getElementById("layer").addEventListener("pointerdown", function () { toggleStart(false); });
+    document.getElementById("wall-a").addEventListener("pointerdown", function () { toggleStart(false); });
+    document.getElementById("wall-b").addEventListener("pointerdown", function () { toggleStart(false); });
+    document.addEventListener("keydown", function (event) {
+      if (event.key !== "Escape") return;
+      if (!document.getElementById("start").hidden) { toggleStart(false); return; }
+      var top = Object.keys(openWindows).sort(function (a, b) { return openWindows[b].style.zIndex - openWindows[a].style.zIndex; })[0];
+      if (top) closeWindow(top);
+    });
+    setTimeout(function () {
+      toast(t("Welcome to ManifestOS"), t("Pick your bias to get started."));
+      biasApp();
+    }, 700);
+  }
+
+  Promise.all([
+    fetch("data/members.json").then(function (r) { return r.json(); }),
+    fetch("data/tr.json").then(function (r) { return r.json(); }).catch(function () { return {}; })
+  ]).then(function (results) { boot(results[0], results[1]); });
+})();
+</script>
+</body>
+</html>

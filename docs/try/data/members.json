@@ -1,0 +1,114 @@
+{
+  "_sources": [
+    "https://en.wikipedia.org/wiki/Manifest_(band)",
+    "https://www.youtube.com/@m6nifestgirls",
+    "Birthdays and roles: majority of Turkish press profiles (cumhuriyet.com.tr, antalyakorfez.com, yenisokegazetesi.com), checked 2026-10-27",
+    "Member colors are ManifestOS picks, not official colors"
+  ],
+  "group": {
+    "name": "manifest",
+    "formed": 2025,
+    "agency": "Hypers New Media",
+    "color": "#E0479E",
+    "links": {
+      "youtube": "https://www.youtube.com/@m6nifestgirls",
+      "youtube_channel_id": "UC3aqBnkDAfMh5eUmiYi_tfQ",
+      "instagram": "https://www.instagram.com/m6nifestgirls/",
+      "tiktok": "https://www.tiktok.com/@m6nifestgirls",
+      "website": "http://manifestgirlband.com",
+      "spotify_search": "https://open.spotify.com/search/manifest%20Manifestival"
+    }
+  },
+  "members": [
+    {
+      "id": "esin",
+      "name": "Esin Bahat",
+      "short": "Esin",
+      "birthday": "2000-08-09",
+      "role": "Main dancer",
+      "color": "#FF4FA3"
+    },
+    {
+      "id": "hilal",
+      "name": "Hilal Yelekçi",
+      "short": "Hilal",
+      "birthday": "2001-05-20",
+      "role": "Lead dancer",
+      "color": "#9B6BFF"
+    },
+    {
+      "id": "lidya",
+      "name": "Lidya Pınar",
+      "short": "Lidya",
+      "birthday": "2003-06-24",
+      "role": "Lead vocalist",
+      "color": "#FF9F43"
+    },
+    {
+      "id": "mina",
+      "name": "Mina Solak",
+      "short": "Mina",
+      "birthday": "2000-05-16",
+      "role": null,
+      "color": "#3FB8F5"
+    },
+    {
+      "id": "sueda",
+      "name": "Sueda Uluca",
+      "short": "Sueda",
+      "birthday": "2004-08-22",
+      "role": null,
+      "color": "#2ECF96"
+    },
+    {
+      "id": "zeynep",
+      "name": "Zeynep Sude Oktay",
+      "short": "Zeynep",
+      "birthday": "2001-04-18",
+      "role": null,
+      "color": "#FF5C5C"
+    }
+  ],
+  "albums": [
+    {
+      "title": "Manifestival",
+      "date": "2025-06-13"
+    }
+  ],
+  "songs": [
+    {"title": "Zamansızdık", "year": 2025},
+    {"title": "Arıyo"},
+    {"title": "KTS"},
+    {"title": "Snap"},
+    {"title": "Manifest"},
+    {"title": "Yaşanacaksa"},
+    {"title": "Rüya"},
+    {"title": "Amatör"},
+    {"title": "Zehir", "year": 2025},
+    {"title": "Başrol Sensin (1. Yıl Özel)", "year": 2026},
+    {"title": "Manifest (Arem & Arman Remix)"},
+    {"title": "Zehir (Arem & Arman Remix)"},
+    {"title": "Daha İyi"},
+    {"title": "Hileli", "featuring": "Ajda Pekkan"},
+    {"title": "Toz Pembe"},
+    {"title": "pVg (Manifest Live Remix)", "featuring": "Motive, Pango"},
+    {"title": "Tralala"}
+  ],
+  "anniversaries": [
+    {
+      "title": "Manifestival anniversary",
+      "date": "2025-06-13"
+    }
+  ],
+  "facts": [
+    "manifest has six members: Esin, Hilal, Lidya, Mina, Sueda and Zeynep.",
+    "The group was formed in 2025 by Hypers New Media.",
+    "Their debut single Zamansızdık came out in February 2025.",
+    "Their first album Manifestival was released on 13 June 2025.",
+    "Hileli is a collaboration with Ajda Pekkan.",
+    "Başrol Sensin was released as a first anniversary special.",
+    "Esin is the group's main dancer.",
+    "Hilal is the group's lead dancer.",
+    "Lidya is the group's lead vocalist."
+  ]
+}

@@ -14,6 +14,10 @@
   <img alt="KDE Plasma 6" src="https://img.shields.io/badge/desktop-KDE%20Plasma%206-3fb8f5">
 </p>
 
+<p align="center">
+  <a href="https://manifest-linux.github.io/manifestos/try/"><b>Try it in your browser</b></a> · <a href="https://manifest-linux.github.io/manifestos/">Website</a> · <a href="https://github.com/manifest-linux/manifestos/releases/latest">Download the ISO</a>
+</p>
+
 ## On stage
 
 <p align="center">

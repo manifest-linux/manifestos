@@ -2,6 +2,8 @@
 import argparse
 import json
 import random
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -54,9 +56,49 @@ def avatar(colors, group):
     return art.svg_doc(1024, 1024, body)
 
 
+def portrait_svg(color, colors, highlight, kicker, title, subtitle, seed, party=False):
+    width, height = 1080, 1920
+    rnd = random.Random(seed)
+    defs, body = art.background(width, height, color, rnd, bokeh=22, sparkles=50)
+    if party:
+        body += art.confetti(width, height, colors, rnd, count=140)
+    if highlight is not None:
+        colors = [c if i == highlight else art.mix(c, art.WHITE, 0.6) for i, c in enumerate(colors)]
+    body += f'<g filter="url(#shadow)">{art.logo(540, 620, 330, colors, color, disk_opacity=0.94)}</g>'
+    body += art.text(540, 1120, 58, kicker, weight=400, opacity=0.9, anchor="middle", spacing=4)
+    title_size = min(220, 960 / (len(title) * 0.62))
+    body += f'<g filter="url(#shadow)">{art.text(540, 1120 + title_size * 1.05, title_size, title, anchor="middle")}</g>'
+    subtitle_size = min(46, 980 / (max(len(subtitle), 1) * 0.56))
+    body += art.text(540, 1120 + title_size * 1.05 + 110, subtitle_size, subtitle, weight=400, opacity=0.9, anchor="middle")
+    return art.svg_doc(width, height, body, defs)
+
+
+def render_jpeg(svg, out, width, height):
+    png = out.with_suffix(".png")
+    art.render(svg, png, width, height)
+    subprocess.run(["convert", str(png), "-quality", "82", str(out)], check=True)
+    png.unlink()
+
+
+def demo(out, data, colors, group):
+    wallpapers = out / "wallpapers"
+    names = " · ".join(m["short"] for m in data["members"])
+    render_jpeg(art.wallpaper_svg(2560, 1440, group, colors, None, "ManifestOS", "manifest", names, seed="Group"), wallpapers / "group.jpg", 1600, 900)
+    render_jpeg(portrait_svg(group, colors, None, "ManifestOS", "manifest", names, seed="Group"), wallpapers / "group-portrait.jpg", 720, 1280)
+    for index, m in enumerate(data["members"]):
+        render_jpeg(art.wallpaper_svg(2560, 1440, m["color"], colors, index, "manifest", m["short"], m["name"], seed=m["id"].capitalize()), wallpapers / f"{m['id']}.jpg", 1600, 900)
+        render_jpeg(art.wallpaper_svg(2560, 1440, m["color"], colors, index, "Happy Birthday", m["short"], "Wishing you the happiest day", seed=f"party-{m['id']}", party=True), wallpapers / f"{m['id']}-birthday.jpg", 1600, 900)
+        render_jpeg(portrait_svg(m["color"], colors, index, "manifest", m["short"], m["name"], seed=m["id"].capitalize()), wallpapers / f"{m['id']}-portrait.jpg", 720, 1280)
+        render_jpeg(portrait_svg(m["color"], colors, index, "Happy Birthday", m["short"], "Wishing you the happiest day", seed=f"party-{m['id']}", party=True), wallpapers / f"{m['id']}-birthday-portrait.jpg", 720, 1280)
+    (out / "data").mkdir(parents=True, exist_ok=True)
+    shutil.copy(art.REPO / "data/members.json", out / "data/members.json")
+    shutil.copy(art.REPO / "data/i18n/tr.json", out / "data/tr.json")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate ManifestOS brand images for the README and GitHub")
     parser.add_argument("out", type=Path)
+    parser.add_argument("--demo", type=Path, help="also build wallpapers and data for the web demo here")
     args = parser.parse_args()
     data = json.loads((art.REPO / "data/members.json").read_text(encoding="utf-8"))
     colors = [m["color"] for m in data["members"]]
@@ -71,6 +113,8 @@ def main():
     art.render(avatar(colors, group), out / "avatar.png", 1024, 1024)
     art.render(banner(data, colors, group), out / "banner.png", 1280, 400)
     art.render(social_preview(data, colors, group), out / "social-preview.png", 1280, 640)
+    if args.demo:
+        demo(args.demo, data, colors, group)
 
 
 if __name__ == "__main__":
