@@ -103,6 +103,12 @@ section > .wrap > p.sub { color: var(--muted); margin: 0 0 32px; max-width: 60ch
 .video { position: relative; aspect-ratio: 16 / 9; border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); background: #000; }
 .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .button.solid { background: var(--accent); color: var(--accent-ink); }
+.photo { margin: 0; }
+.photo img { width: 100%; display: block; border-radius: 20px; box-shadow: var(--shadow); object-fit: cover; }
+.photo figcaption { color: var(--muted); font-size: 14px; padding: 8px 4px 0; }
+.photo.wide { margin-bottom: 18px; }
+.photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.photos .photo img { aspect-ratio: 3 / 4; }
 .follow { justify-content: center; }
 .steps { counter-reset: step; display: grid; gap: 14px; padding: 0; margin: 0; list-style: none; }
 .steps li {
@@ -118,10 +124,10 @@ code { background: var(--border); padding: 2px 6px; border-radius: 6px; font-siz
 footer { border-top: 1px solid var(--border); padding: 32px 0 48px; color: var(--muted); font-size: 15px; }
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; padding: 48px 16px 64px; }
-  .grid, .gallery { grid-template-columns: 1fr 1fr; }
+  .grid, .gallery, .photos { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 560px) {
-  .grid, .gallery { grid-template-columns: 1fr; }
+  .grid, .gallery, .photos { grid-template-columns: 1fr; }
   .lead { font-size: 18px; }
 }
 </style>
@@ -158,6 +164,31 @@ footer { border-top: 1px solid var(--border); padding: 32px 0 48px; color: var(-
         <div class="card"><div class="emoji">⏳</div><h3>Countdown widget</h3><p>A desktop widget counts down to the next birthday, anniversary or concert you add.</p></div>
         <div class="card"><div class="emoji">🪟</div><h3>Feels familiar</h3><p>A centered taskbar and start menu, so anyone coming from Windows feels at home right away.</p></div>
         <div class="card"><div class="emoji">🧿</div><h3>Little extras</h3><p>Themed boot screen, login screen, installer slides, a fan art lock screen and a <code>manifest</code> terminal command.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>On stage</h2>
+      <p class="sub">manifest live in concert, shot by fans.</p>
+      <figure class="photo wide">
+        <img src="photos/manifest-bursa.jpg" alt="All six manifest members on stage at the Bursa concert" loading="lazy">
+        <figcaption>Bursa concert, 5 June 2026. Photo by ZethRod, <a href="https://commons.wikimedia.org/wiki/File:Manifest_Bursa_050626.jpg">CC0</a>.</figcaption>
+      </figure>
+      <div class="photos">
+        <figure class="photo">
+          <img src="photos/manifest-concert-1.jpg" alt="manifest performing on a blue lit stage" loading="lazy">
+          <figcaption>Photo by Shadow4dark, <a href="https://commons.wikimedia.org/wiki/File:Manifest_at_concert.jpg">CC0</a>.</figcaption>
+        </figure>
+        <figure class="photo">
+          <img src="photos/manifest-concert-2.jpg" alt="manifest dancing on stage" loading="lazy">
+          <figcaption>Photo by Shadow4dark, <a href="https://commons.wikimedia.org/wiki/File:Manifest_at_concert_2.jpg">CC0</a>.</figcaption>
+        </figure>
+        <figure class="photo">
+          <img src="photos/hilal-yelekci.jpg" alt="Hilal Yelekçi performing in Antalya" loading="lazy">
+          <figcaption>Hilal in Antalya, 29 May 2026. Photo by 07, <a href="https://commons.wikimedia.org/wiki/File:Hilal_Yelek%C3%A7i.jpg">CC BY-SA 4.0</a>.</figcaption>
+        </figure>
       </div>
     </div>
   </section>
@@ -209,7 +240,7 @@ footer { border-top: 1px solid var(--border); padding: 32px 0 48px; color: var(-
 
 <footer>
   <div class="wrap">
-    ManifestOS is an unofficial fan project. It is not affiliated with manifest, Hypers New Media or their partners. All member names belong to their owners. No music or official photos are included; videos play from the official manifest YouTube channel.
+    ManifestOS is an unofficial fan project. It is not affiliated with manifest, Hypers New Media or their partners. All member names belong to their owners. No music or official photos are included; videos play from the official manifest YouTube channel, and the concert photos are fan photos from Wikimedia Commons under free licenses (<a href="https://github.com/manifest-linux/manifestos/blob/main/docs/photos/CREDITS.md">credits</a>).
   </div>
 </footer>
 
