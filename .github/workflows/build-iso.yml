@@ -3,6 +3,10 @@ name: Build ISO
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "README.md"
+      - "art/make_brand.py"
+      - "docs/**"
   pull_request:
   workflow_dispatch:
   schedule:
