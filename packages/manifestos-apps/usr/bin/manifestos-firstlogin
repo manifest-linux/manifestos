@@ -1,0 +1,23 @@
+#!/usr/bin/python3
+import os
+import sys
+
+sys.path.insert(0, os.environ.get("MANIFESTOS_LIB_DIR", "/usr/lib/manifestos"))
+
+import manifestos_common as mc
+
+
+def main():
+    marker = mc.CONFIG_DIR / "firstlogin-done"
+    if marker.exists():
+        return 0
+    mc.configure_lockscreen()
+    mc.apply_look(mc.GROUP_ID, attempts=10)
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    marker.touch()
+    mc.launch(["manifestos-bias"])
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

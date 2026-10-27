@@ -1,0 +1,10 @@
+Package: manifestos-artwork
+Version: @VERSION@
+Architecture: all
+Maintainer: ManifestOS <manifestos@users.noreply.github.com>
+Section: misc
+Priority: optional
+Depends: plymouth, plymouth-label, sddm-theme-breeze, fonts-comfortaa
+Description: ManifestOS artwork
+ Wallpapers, color schemes, boot splash, GRUB theme, login screen,
+ Plasma global theme and installer branding for ManifestOS.

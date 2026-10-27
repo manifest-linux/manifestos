@@ -1,0 +1,17 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "ManifestOS"
+            }
+        ],
+        "Category": "",
+        "Description": "Pastel ManifestOS desktop with a centered taskbar",
+        "Id": "org.manifestos.desktop",
+        "License": "GPL-3.0-or-later",
+        "Name": "ManifestOS",
+        "Version": "1.0"
+    },
+    "X-Plasma-APIVersion": "2"
+}

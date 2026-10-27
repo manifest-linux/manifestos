@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ManifestOS</title>
+<meta name="description" content="ManifestOS is an unofficial, fan-made Linux distribution for fans of manifest.">
+<link rel="icon" href="img/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fff7fb;
+  --surface: #ffffff;
+  --text: #2b1438;
+  --muted: #6f5a78;
+  --accent: #e0479e;
+  --accent-ink: #ffffff;
+  --border: #f2d7e7;
+  --shadow: 0 18px 50px rgba(224, 71, 158, 0.16);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1a0b24;
+    --surface: #2b1438;
+    --text: #fbeef6;
+    --muted: #c9b2d3;
+    --accent: #ff7cc0;
+    --accent-ink: #2b1438;
+    --border: #46264f;
+    --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1a0b24;
+  --surface: #2b1438;
+  --text: #fbeef6;
+  --muted: #c9b2d3;
+  --accent: #ff7cc0;
+  --accent-ink: #2b1438;
+  --border: #46264f;
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.6 Nunito, system-ui, sans-serif;
+}
+a { color: var(--accent); }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+header {
+  background: linear-gradient(135deg, #ff9cd0 0%, #e0479e 55%, #7a1f62 100%);
+  color: #fff;
+  overflow: hidden;
+}
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  padding: 72px 16px 88px;
+}
+.brand { display: flex; align-items: center; gap: 12px; font-family: Comfortaa, sans-serif; font-weight: 700; font-size: 20px; }
+.brand img { width: 40px; height: 40px; }
+h1, h2, h3 { font-family: Comfortaa, sans-serif; line-height: 1.2; }
+h1 { font-size: clamp(38px, 6vw, 64px); margin: 18px 0 12px; }
+.lead { font-size: 20px; max-width: 34ch; opacity: 0.95; }
+.buttons { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.button {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 48px; padding: 0 24px; border-radius: 999px;
+  font-weight: 800; text-decoration: none;
+}
+.button.primary { background: #fff; color: #c2187a; }
+.button.ghost { border: 2px solid rgba(255, 255, 255, 0.8); color: #fff; }
+.hero img.shot { width: 100%; border-radius: 22px; box-shadow: 0 30px 70px rgba(43, 20, 56, 0.4); }
+.dots { display: flex; gap: 8px; margin-top: 22px; }
+.dots span { width: 14px; height: 14px; border-radius: 50%; }
+section { padding: 72px 0; }
+section h2 { font-size: clamp(28px, 4vw, 38px); margin: 0 0 8px; }
+section > .wrap > p.sub { color: var(--muted); margin: 0 0 32px; max-width: 60ch; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+  padding: 24px; box-shadow: var(--shadow);
+}
+.card h3 { margin: 6px 0 8px; font-size: 20px; }
+.card p { margin: 0; color: var(--muted); }
+.emoji { font-size: 28px; }
+.gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.gallery img { width: 100%; border-radius: 16px; display: block; }
+.steps { counter-reset: step; display: grid; gap: 14px; padding: 0; margin: 0; list-style: none; }
+.steps li {
+  counter-increment: step; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 18px; padding: 18px 20px 18px 68px; position: relative;
+}
+.steps li::before {
+  content: counter(step); position: absolute; left: 18px; top: 16px;
+  width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+  display: grid; place-items: center; font-weight: 800;
+}
+code { background: var(--border); padding: 2px 6px; border-radius: 6px; font-size: 15px; }
+footer { border-top: 1px solid var(--border); padding: 32px 0 48px; color: var(--muted); font-size: 15px; }
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; padding: 48px 16px 64px; }
+  .grid, .gallery { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .grid, .gallery { grid-template-columns: 1fr; }
+  .lead { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap hero">
+    <div>
+      <div class="brand"><img src="img/logo.svg" alt="">ManifestOS</div>
+      <h1>A Linux made for manifest fans</h1>
+      <p class="lead">Pick your bias and your whole desktop turns her color. Birthdays, new songs and concerts are always one glance away.</p>
+      <div class="buttons">
+        <a class="button primary" id="download" href="#install">Download the ISO</a>
+        <a class="button ghost" id="source" href="#install">Source code</a>
+      </div>
+      <div class="dots" aria-hidden="true">
+        <span style="background:#FF4FA3"></span><span style="background:#9B6BFF"></span><span style="background:#FF9F43"></span>
+        <span style="background:#3FB8F5"></span><span style="background:#2ECF96"></span><span style="background:#FF5C5C"></span>
+      </div>
+    </div>
+    <img class="shot" src="img/hero.jpg" alt="ManifestOS desktop wallpaper with the six color ring logo">
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="wrap">
+      <h2>What's inside</h2>
+      <p class="sub">Debian 13 underneath, a pastel KDE Plasma desktop on top, and a few things only fans get.</p>
+      <div class="grid">
+        <div class="card"><div class="emoji">💖</div><h3>Bias picker</h3><p>Choose your favorite member on first login. Wallpaper, accent color and theme switch to match her.</p></div>
+        <div class="card"><div class="emoji">🎧</div><h3>Manifest Hub</h3><p>Member profiles, the latest videos from the official channel, the discography and every link in one app.</p></div>
+        <div class="card"><div class="emoji">🎂</div><h3>Birthday surprises</h3><p>On a member's birthday you get a notification and a confetti wallpaper made just for her.</p></div>
+        <div class="card"><div class="emoji">⏳</div><h3>Countdown widget</h3><p>A desktop widget counts down to the next birthday, anniversary or concert you add.</p></div>
+        <div class="card"><div class="emoji">🪟</div><h3>Feels familiar</h3><p>A centered taskbar and start menu, so anyone coming from Windows feels at home right away.</p></div>
+        <div class="card"><div class="emoji">🧿</div><h3>Little extras</h3><p>Themed boot screen, login screen, installer slides, a fan art lock screen and a <code>manifest</code> terminal command.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>One wallpaper for each member</h2>
+      <p class="sub">Every member gets her own color, wallpaper and birthday design.</p>
+      <div class="gallery">
+        <img src="img/esin.jpg" alt="Esin wallpaper" loading="lazy">
+        <img src="img/hilal.jpg" alt="Hilal wallpaper" loading="lazy">
+        <img src="img/lidya.jpg" alt="Lidya wallpaper" loading="lazy">
+        <img src="img/mina.jpg" alt="Mina wallpaper" loading="lazy">
+        <img src="img/sueda.jpg" alt="Sueda wallpaper" loading="lazy">
+        <img src="img/zeynep.jpg" alt="Zeynep wallpaper" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="wrap">
+      <h2>Install it</h2>
+      <p class="sub">You need a USB stick of at least 4 GB and a 64-bit PC.</p>
+      <ol class="steps">
+        <li>Download the latest ISO from the releases page.</li>
+        <li>Write it to the USB stick with balenaEtcher, Rufus (DD mode) or Ventoy.</li>
+        <li>Turn off Secure Boot in your BIOS settings, then boot from the USB stick.</li>
+        <li>Pick Turkish or English in the boot menu and try everything live without installing.</li>
+        <li>When you are ready, double-click <b>Install ManifestOS</b> on the desktop.</li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    ManifestOS is an unofficial fan project. It is not affiliated with manifest, Hypers New Media or their partners. All member names belong to their owners, and no music or official photos are included.
+  </div>
+</footer>
+
+<script>
+(function () {
+  var host = location.hostname;
+  if (!/\.github\.io$/.test(host)) return;
+  var owner = host.split(".")[0];
+  var parts = location.pathname.split("/").filter(Boolean);
+  var repo = parts.length ? parts[0] : owner + ".github.io";
+  var base = "https://github.com/" + owner + "/" + repo;
+  document.getElementById("download").href = base + "/releases/latest";
+  document.getElementById("source").href = base;
+})();
+</script>
+</body>
+</html>

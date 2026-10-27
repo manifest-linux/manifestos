@@ -1,0 +1,54 @@
+name: Build ISO
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-iso-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unit tests
+        run: python3 -m unittest discover -s tests -v
+
+  iso:
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+      - name: Set version
+        run: echo "MANIFESTOS_VERSION=$(date -u +%Y.%m.%d).${{ github.run_number }}" >> "$GITHUB_ENV"
+      - name: Build ISO
+        env:
+          MANIFESTOS_HOME_URL: https://github.com/${{ github.repository }}
+        run: ./build.sh
+      - name: Check ISO size
+        run: |
+          size=$(stat -c %s out/manifestos-*.iso)
+          echo "ISO size: $((size / 1048576)) MiB"
+          test "$size" -lt 2147483648
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$MANIFESTOS_VERSION" out/*.iso out/*.sha256 \
+            --title "ManifestOS $MANIFESTOS_VERSION" \
+            --notes "Automatic build from ${GITHUB_SHA::7}. Write the ISO to a USB stick, turn off Secure Boot and boot from it."

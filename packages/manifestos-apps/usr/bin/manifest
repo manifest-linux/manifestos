@@ -1,0 +1,124 @@
+#!/usr/bin/python3
+import argparse
+import datetime as dt
+import json
+import os
+import sys
+
+sys.path.insert(0, os.environ.get("MANIFESTOS_LIB_DIR", "/usr/lib/manifestos"))
+
+import manifestos_common as mc
+
+
+def paint(color, content):
+    r, g, b = mc.hex_rgb(color)
+    if not sys.stdout.isatty():
+        return content
+    return f"\033[38;2;{r};{g};{b}m{content}\033[0m"
+
+
+def show_banner(_args):
+    colors = [m["color"] for m in mc.members()]
+    if sys.stdout.isatty():
+        print(mc.ring_ansi(colors))
+    print()
+    print(paint(mc.band()["group"]["color"], "  ManifestOS") + "  " + mc.random_fact())
+    upcoming = mc.upcoming()
+    if upcoming:
+        item = upcoming[0]
+        print("  " + paint(item["color"], "●") + f" {item['title']}  ·  {mc.countdown(item)}")
+    return 0
+
+
+def show_members(_args):
+    today = dt.date.today()
+    settings = mc.load_settings()
+    for m in mc.members():
+        born = mc.parse_date(m["birthday"])
+        days = (mc.next_occurrence(born.month, born.day, today) - today).days
+        mark = " ♥" if settings.get("bias") == m["id"] else ""
+        role = f"  {mc.tr(m['role'])}" if m.get("role") else ""
+        when = mc.tr("Birthday is today!") if days == 0 else mc.tr("Next birthday in {days} days").format(days=days)
+        print(f"{paint(m['color'], '●')} {m['name']}{mark}{role}")
+        print(f"    {mc.format_date(born)} ({mc.tr('{age} years old').format(age=mc.age_on(born, today))}), {when}")
+    return 0
+
+
+def show_events(args):
+    if args.json:
+        print(json.dumps(mc.upcoming_json(limit=args.limit), ensure_ascii=False))
+        return 0
+    items = mc.upcoming()
+    if args.limit:
+        items = items[:args.limit]
+    for item in items:
+        print(f"{paint(item['color'], '●')} {item['when']:%Y-%m-%d}  {item['title']}  ({mc.countdown(item)})")
+    return 0
+
+
+def show_next(_args):
+    items = mc.upcoming()
+    if not items:
+        print(mc.tr("Nothing planned yet"))
+        return 0
+    item = items[0]
+    print(f"{paint(item['color'], item['title'])}  ·  {mc.countdown(item)}")
+    return 0
+
+
+def bias(args):
+    if not args.member:
+        current = mc.load_settings().get("bias", mc.GROUP_ID)
+        print(mc.display_name(current))
+        return 0
+    wanted = args.member.lower()
+    if wanted in ("ot6", "all", "group", "manifest"):
+        wanted = mc.GROUP_ID
+    if wanted != mc.GROUP_ID and not mc.member(wanted):
+        names = ", ".join(m["id"] for m in mc.members())
+        print(mc.tr("Unknown member. Pick one of: {names}, group").format(names=names), file=sys.stderr)
+        return 1
+    mc.apply_look(wanted)
+    print(mc.tr("Your desktop now wears {name}'s colors.").format(name=mc.display_name(wanted)))
+    return 0
+
+
+def night(args):
+    settings = mc.load_settings()
+    mc.apply_look(settings.get("bias", mc.GROUP_ID), night=args.state == "on")
+    return 0
+
+
+def fact(_args):
+    print(mc.random_fact())
+    return 0
+
+
+def hub(_args):
+    return 0 if mc.launch(["manifest-hub"]) else 1
+
+
+def main():
+    parser = argparse.ArgumentParser(prog="manifest", description="ManifestOS companion for manifest fans")
+    sub = parser.add_subparsers(dest="command")
+    sub.add_parser("banner").set_defaults(func=show_banner)
+    sub.add_parser("members").set_defaults(func=show_members)
+    events = sub.add_parser("events")
+    events.add_argument("--json", action="store_true")
+    events.add_argument("--limit", type=int)
+    events.set_defaults(func=show_events)
+    sub.add_parser("next").set_defaults(func=show_next)
+    bias_parser = sub.add_parser("bias")
+    bias_parser.add_argument("member", nargs="?")
+    bias_parser.set_defaults(func=bias)
+    night_parser = sub.add_parser("night")
+    night_parser.add_argument("state", choices=["on", "off"])
+    night_parser.set_defaults(func=night)
+    sub.add_parser("fact").set_defaults(func=fact)
+    sub.add_parser("hub").set_defaults(func=hub)
+    args = parser.parse_args()
+    return args.func(args) if args.command else show_banner(args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

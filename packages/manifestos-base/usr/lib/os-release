@@ -1,0 +1,11 @@
+PRETTY_NAME="ManifestOS @VERSION@"
+NAME="ManifestOS"
+VERSION_ID="@VERSION@"
+VERSION="@VERSION@ (Toz Pembe)"
+VERSION_CODENAME=trixie
+ID=manifestos
+ID_LIKE=debian
+LOGO=manifestos
+HOME_URL="@HOME_URL@"
+SUPPORT_URL="@HOME_URL@/issues"
+BUG_REPORT_URL="@HOME_URL@/issues"

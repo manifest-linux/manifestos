@@ -1,0 +1,91 @@
+Window.SetBackgroundTopColor(0.17, 0.08, 0.22);
+Window.SetBackgroundBottomColor(0.35, 0.12, 0.31);
+
+screen_x = Window.GetX();
+screen_y = Window.GetY();
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+center_x = screen_x + screen_width / 2;
+
+logo_image = Image("logo.png");
+logo_sprite = Sprite(logo_image);
+logo_y = screen_y + screen_height / 2 - logo_image.GetHeight() / 2 - 40;
+logo_sprite.SetPosition(center_x - logo_image.GetWidth() / 2, logo_y, 10);
+
+dot_count = 6;
+dot_spacing = 30;
+dot_y = logo_y + logo_image.GetHeight() + 56;
+prompt_y = dot_y + 60;
+
+for (i = 0; i < dot_count; i = i + 1)
+{
+    dots[i].image = Image("dot" + i + ".png");
+    dots[i].sprite = Sprite(dots[i].image);
+    dots[i].sprite.SetPosition(center_x + (i - (dot_count - 1) / 2) * dot_spacing - dots[i].image.GetWidth() / 2, dot_y, 10);
+    dots[i].sprite.SetOpacity(0.3);
+}
+
+frame = 0;
+
+fun refresh_callback()
+{
+    global.frame = global.frame + 1;
+    for (i = 0; i < global.dot_count; i = i + 1)
+    {
+        wave = Math.Sin(global.frame / 7 - i * 0.8);
+        if (wave < 0)
+            wave = 0;
+        global.dots[i].sprite.SetOpacity(0.3 + 0.7 * wave);
+    }
+}
+
+fun show_prompt(prompt, answer)
+{
+    box_image = Image("box.png");
+    global.box_sprite = Sprite(box_image);
+    global.box_sprite.SetPosition(global.center_x - box_image.GetWidth() / 2, global.prompt_y, 100);
+
+    prompt_image = Image.Text(prompt, 1, 1, 1);
+    global.prompt_sprite = Sprite(prompt_image);
+    global.prompt_sprite.SetPosition(global.center_x - prompt_image.GetWidth() / 2, global.prompt_y - prompt_image.GetHeight() - 10, 100);
+
+    answer_image = Image.Text(answer, 1, 1, 1);
+    global.answer_sprite = Sprite(answer_image);
+    global.answer_sprite.SetPosition(global.center_x - answer_image.GetWidth() / 2, global.prompt_y + box_image.GetHeight() / 2 - answer_image.GetHeight() / 2, 101);
+}
+
+fun display_password_callback(prompt, bullets)
+{
+    answer = "";
+    for (i = 0; i < bullets; i = i + 1)
+        answer = answer + "●";
+    show_prompt(prompt, answer);
+}
+
+fun display_question_callback(prompt, entry)
+{
+    show_prompt(prompt, entry);
+}
+
+fun display_normal_callback()
+{
+    if (global.box_sprite)
+    {
+        global.box_sprite.SetOpacity(0);
+        global.prompt_sprite.SetOpacity(0);
+        global.answer_sprite.SetOpacity(0);
+    }
+}
+
+fun message_callback(text)
+{
+    message_image = Image.Text(text, 1, 1, 1);
+    global.message_sprite = Sprite(message_image);
+    global.message_sprite.SetPosition(global.center_x - message_image.GetWidth() / 2, global.screen_y + global.screen_height - 60, 100);
+}
+
+Plymouth.SetRefreshFunction(refresh_callback);
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+Plymouth.SetDisplayQuestionFunction(display_question_callback);
+Plymouth.SetDisplayNormalFunction(display_normal_callback);
+Plymouth.SetMessageFunction(message_callback);

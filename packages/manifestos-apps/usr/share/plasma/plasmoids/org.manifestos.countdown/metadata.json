@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "ManifestOS"
+            }
+        ],
+        "Category": "Date and Time",
+        "Description": "Countdown to the next manifest birthday, anniversary or event",
+        "Icon": "manifestos",
+        "Id": "org.manifestos.countdown",
+        "License": "GPL-3.0-or-later",
+        "Name": "Manifest Countdown",
+        "Version": "1.0",
+        "Name[tr]": "Manifest Geri Sayım",
+        "Description[tr]": "Bir sonraki manifest doğum günü, yıl dönümü veya etkinliğe geri sayım"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

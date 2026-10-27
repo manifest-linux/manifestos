@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=ManifestOS
+Description=ManifestOS boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/manifestos
+ScriptFile=/usr/share/plymouth/themes/manifestos/manifestos.script

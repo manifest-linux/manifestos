@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=ManifestOS first login
+Exec=manifestos-firstlogin
+OnlyShowIn=KDE;
+NoDisplay=true
+X-KDE-autostart-phase=2

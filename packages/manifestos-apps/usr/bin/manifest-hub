@@ -1,0 +1,9 @@
+#!/usr/bin/python3
+import os
+import sys
+
+sys.path.insert(0, os.environ.get("MANIFESTOS_LIB_DIR", "/usr/lib/manifestos"))
+
+from manifest_hub import main
+
+sys.exit(main(sys.argv))

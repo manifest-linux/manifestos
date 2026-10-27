@@ -1,0 +1,8 @@
+[Unit]
+Description=ManifestOS birthday and event reminders
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/manifestos-daily

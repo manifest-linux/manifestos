@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Manifest Hub
+GenericName=Fan hub
+Comment=Members, videos, music, countdowns and links for manifest fans
+Comment[tr]=manifest hayranları için üyeler, videolar, müzik, geri sayım ve linkler
+Exec=manifest-hub
+Icon=manifest-hub
+Terminal=false
+Categories=AudioVideo;Network;
+Keywords=manifest;kpop;tpop;fan;bias;

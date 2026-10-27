@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Pick Your Bias
+Name[tr]=Bias Seç
+Comment=Match your wallpaper and colors to your favorite member
+Comment[tr]=Duvar kağıdını ve renkleri en sevdiğin üyeye göre ayarla
+Exec=manifestos-bias
+Icon=manifestos
+Terminal=false
+Categories=Settings;DesktopSettings;
+Keywords=manifest;bias;theme;wallpaper;

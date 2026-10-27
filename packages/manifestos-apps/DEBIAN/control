@@ -1,0 +1,10 @@
+Package: manifestos-apps
+Version: @VERSION@
+Architecture: all
+Maintainer: ManifestOS <manifestos@users.noreply.github.com>
+Section: misc
+Priority: optional
+Depends: python3, python3-pyqt6, libnotify-bin, libkf6config-bin, plasma-workspace, qml6-module-org-kde-plasma-plasma5support, xdg-user-dirs, xdg-utils
+Description: ManifestOS fan apps
+ Manifest Hub, the bias picker, the manifest terminal companion,
+ birthday reminders and the Manifest Countdown desktop widget.

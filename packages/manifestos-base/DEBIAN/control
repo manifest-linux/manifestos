@@ -1,0 +1,10 @@
+Package: manifestos-base
+Version: @VERSION@
+Architecture: all
+Maintainer: ManifestOS <manifestos@users.noreply.github.com>
+Section: misc
+Priority: optional
+Depends: base-files, manifestos-artwork (= @VERSION@), manifestos-apps (= @VERSION@)
+Description: ManifestOS base system identity
+ Release information, boot defaults and live session tweaks for ManifestOS,
+ an unofficial fan-made distribution for fans of the band manifest.

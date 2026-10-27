@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ] && command -v plymouth-set-default-theme >/dev/null; then
+	plymouth-set-default-theme manifestos
+fi

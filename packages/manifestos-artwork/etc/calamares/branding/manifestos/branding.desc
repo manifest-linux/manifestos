@@ -1,0 +1,32 @@
+---
+componentName: manifestos
+welcomeStyleCalamares: false
+welcomeExpandingLogo: true
+windowExpanding: normal
+windowSize: 860px,600px
+windowPlacement: center
+strings:
+    productName: ManifestOS
+    shortProductName: ManifestOS
+    version: "@VERSION@"
+    shortVersion: "@VERSION@"
+    versionedName: "ManifestOS @VERSION@"
+    shortVersionedName: "ManifestOS @VERSION@"
+    bootloaderEntryName: ManifestOS
+    productUrl: "@HOME_URL@"
+    supportUrl: "@HOME_URL@/issues"
+    knownIssuesUrl: "@HOME_URL@/issues"
+    releaseNotesUrl: "@HOME_URL@/releases"
+sidebar: widget
+navigation: widget
+images:
+    productLogo: "logo.png"
+    productIcon: "logo.png"
+    productWelcome: "welcome.png"
+slideshow: "show.qml"
+slideshowAPI: 2
+style:
+    SidebarBackground: "#2B1438"
+    SidebarText: "#FFFFFF"
+    SidebarTextCurrent: "#2B1438"
+    SidebarBackgroundCurrent: "#FF9CCF"

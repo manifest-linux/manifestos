@@ -1,0 +1,39 @@
+title-text: ""
+desktop-image: "background.png"
+desktop-color: "#2B1438"
+terminal-font: "Manifest Regular 16"
+terminal-left: "0"
+terminal-top: "0"
+terminal-width: "100%"
+terminal-height: "100%"
+terminal-border: "0"
+
++ boot_menu {
+    left = 25%
+    top = 56%
+    width = 50%
+    height = 30%
+    item_font = "Manifest Regular 20"
+    item_color = "#E9D8F0"
+    selected_item_font = "Manifest Bold 20"
+    selected_item_color = "#FFFFFF"
+    selected_item_pixmap_style = "select_*.png"
+    item_height = 36
+    item_padding = 6
+    item_spacing = 22
+    icon_width = 0
+    icon_height = 0
+    item_icon_space = 0
+    scrollbar = false
+}
+
++ label {
+    id = "__timeout__"
+    left = 0
+    top = 92%
+    width = 100%
+    align = "center"
+    text = "Starting in %d seconds"
+    color = "#E9D8F0"
+    font = "Manifest Regular 16"
+}

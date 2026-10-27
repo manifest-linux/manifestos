@@ -1,0 +1,6 @@
+[Greeter]
+WallpaperPlugin=org.kde.slideshow
+
+[Greeter][Wallpaper][org.kde.slideshow][General]
+SlideInterval=30
+SlidePaths=/usr/share/manifestos/lockscreen/

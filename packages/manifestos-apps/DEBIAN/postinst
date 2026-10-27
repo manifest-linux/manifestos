@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ] && command -v systemctl >/dev/null; then
+	systemctl --global enable manifestos-daily.timer
+fi
