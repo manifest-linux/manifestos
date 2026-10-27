@@ -93,6 +93,17 @@ section > .wrap > p.sub { color: var(--muted); margin: 0 0 32px; max-width: 60ch
 .emoji { font-size: 28px; }
 .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .gallery img { width: 100%; border-radius: 16px; display: block; }
+.member {
+  margin: 0; background: var(--surface); border: 2px solid var(--member); border-radius: 20px;
+  padding: 10px; box-shadow: var(--shadow);
+}
+.member figcaption { padding: 12px 6px 6px; display: grid; gap: 2px; }
+.member b { font-family: Comfortaa, sans-serif; color: var(--member); font-size: 18px; }
+.member span { color: var(--muted); font-size: 15px; }
+.video { position: relative; aspect-ratio: 16 / 9; border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); background: #000; }
+.video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.button.solid { background: var(--accent); color: var(--accent-ink); }
+.follow { justify-content: center; }
 .steps { counter-reset: step; display: grid; gap: 14px; padding: 0; margin: 0; list-style: none; }
 .steps li {
   counter-increment: step; background: var(--surface); border: 1px solid var(--border);
@@ -153,15 +164,30 @@ footer { border-top: 1px solid var(--border); padding: 32px 0 48px; color: var(-
 
   <section>
     <div class="wrap">
-      <h2>One wallpaper for each member</h2>
-      <p class="sub">Every member gets her own color, wallpaper and birthday design.</p>
+      <h2>Meet the girls</h2>
+      <p class="sub">Six members, six colors. Every one of them gets her own wallpaper and a confetti wallpaper on her birthday.</p>
       <div class="gallery">
-        <img src="img/esin.jpg" alt="Esin wallpaper" loading="lazy">
-        <img src="img/hilal.jpg" alt="Hilal wallpaper" loading="lazy">
-        <img src="img/lidya.jpg" alt="Lidya wallpaper" loading="lazy">
-        <img src="img/mina.jpg" alt="Mina wallpaper" loading="lazy">
-        <img src="img/sueda.jpg" alt="Sueda wallpaper" loading="lazy">
-        <img src="img/zeynep.jpg" alt="Zeynep wallpaper" loading="lazy">
+        <figure class="member" style="--member:#FF4FA3"><img src="img/esin.jpg" alt="Esin wallpaper" loading="lazy"><figcaption><b>Esin Bahat</b><span>Main dancer · Birthday 9 August</span></figcaption></figure>
+        <figure class="member" style="--member:#9B6BFF"><img src="img/hilal.jpg" alt="Hilal wallpaper" loading="lazy"><figcaption><b>Hilal Yelekçi</b><span>Lead dancer · Birthday 20 May</span></figcaption></figure>
+        <figure class="member" style="--member:#FF9F43"><img src="img/lidya.jpg" alt="Lidya wallpaper" loading="lazy"><figcaption><b>Lidya Pınar</b><span>Lead vocalist · Birthday 24 June</span></figcaption></figure>
+        <figure class="member" style="--member:#3FB8F5"><img src="img/mina.jpg" alt="Mina wallpaper" loading="lazy"><figcaption><b>Mina Solak</b><span>Birthday 16 May</span></figcaption></figure>
+        <figure class="member" style="--member:#2ECF96"><img src="img/sueda.jpg" alt="Sueda wallpaper" loading="lazy"><figcaption><b>Sueda Uluca</b><span>Birthday 22 August</span></figcaption></figure>
+        <figure class="member" style="--member:#FF5C5C"><img src="img/zeynep.jpg" alt="Zeynep wallpaper" loading="lazy"><figcaption><b>Zeynep Sude Oktay</b><span>Birthday 18 April</span></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Watch manifest</h2>
+      <p class="sub">The latest videos from the official manifest channel, always up to date.</p>
+      <div class="video">
+        <iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=UU3aqBnkDAfMh5eUmiYi_tfQ" title="Latest videos from manifest on YouTube" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+      <div class="buttons follow">
+        <a class="button solid" href="https://www.youtube.com/@m6nifestgirls">YouTube</a>
+        <a class="button solid" href="https://www.instagram.com/m6nifestgirls/">Instagram</a>
+        <a class="button solid" href="https://www.tiktok.com/@m6nifestgirls">TikTok</a>
       </div>
     </div>
   </section>
@@ -183,7 +209,7 @@ footer { border-top: 1px solid var(--border); padding: 32px 0 48px; color: var(-
 
 <footer>
   <div class="wrap">
-    ManifestOS is an unofficial fan project. It is not affiliated with manifest, Hypers New Media or their partners. All member names belong to their owners, and no music or official photos are included.
+    ManifestOS is an unofficial fan project. It is not affiliated with manifest, Hypers New Media or their partners. All member names belong to their owners. No music or official photos are included; videos play from the official manifest YouTube channel.
   </div>
 </footer>
 
